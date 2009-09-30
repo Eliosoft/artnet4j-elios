@@ -1,5 +1,5 @@
 package artnet4j;
 
-public class ArtNetServer {
+public class ArtNetServer extends ArtNetNode {
 
 }
