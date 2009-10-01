@@ -10,12 +10,17 @@ public class ArtNetPacketParser {
 			.getClass().getName());
 
 	public static ArtNetPacket createPacketForOpCode(int opCode, byte[] data) {
-		logger.info("creating packet instance for opcode: 0x"+ByteUtils.hex(opCode, 4));
+		logger.finer("creating packet instance for opcode: 0x"+ByteUtils.hex(opCode, 4));
 		ArtNetPacket packet=null;
 		for(PacketType type : PacketType.values()) {
 			if (opCode==type.getOpCode()) {
 				packet=type.createPacket();
-				packet.parse(data);
+				if (packet!=null) {
+					packet.parse(data);
+					break;
+				} else {
+					logger.info("packet type valid, but not yet supported");
+				}
 			}
 		}
 		return packet;
@@ -24,10 +29,9 @@ public class ArtNetPacketParser {
 	private static ArtNetPacket parse(byte[] raw, int offset, int length) {
 		ArtNetPacket packet=null;
 		ByteUtils data=new ByteUtils(raw);
-		logger.info("parsing packet data...");
 		if (data.length>10) {
 			if (data.compareBytes(ArtNetPacket.HEADER,0,8)) {
-				int opCode=data.getInt16LE(2);
+				int opCode=data.getInt16LE(8);
 				packet=createPacketForOpCode(opCode,raw);
 			} else {
 				logger.warning("invalid header");

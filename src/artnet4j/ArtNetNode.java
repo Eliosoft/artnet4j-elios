@@ -27,12 +27,16 @@ public class ArtNetNode {
 	private int numPorts;
 	private PortDescriptor[] ports;
 
+	public ArtNetNode() {
+		this(NodeStyle.ST_NODE);
+	}
+
 	public ArtNetNode(NodeStyle style) {
 		nodeStyle=style;
 	}
 
 	public void extractConfig(ArtPollReplyPacket source) {
-		ip=source.getIPAddress();
+		setIPAddress(source.getIPAddress());
 		subSwitch=source.getSubSwitch();
 		oemCode=source.getOEMCode();
 		nodeStatus=source.getNodeStatus();
@@ -52,5 +56,10 @@ public class ArtNetNode {
 
 	public void setIPAddress(InetAddress ip) {
 		this.ip=ip;
+	}
+
+	@Override
+	public String toString() {
+		return "node: "+ip+" "+longName+", "+numPorts+" ports, "+subSwitch+" subswitch";
 	}
 }

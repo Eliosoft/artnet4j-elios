@@ -12,6 +12,8 @@ import java.util.logging.Level;
 
 import artnet4j.packets.ArtNetPacket;
 import artnet4j.packets.ArtNetPacketParser;
+import artnet4j.packets.ArtPollPacket;
+import artnet4j.packets.PacketType;
 
 public class ArtNetServer extends ArtNetNode implements Runnable {
 
@@ -69,9 +71,12 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 		try {
 			while(isActive) {
 				socket.receive(receivedPacket);
-				logger.info("received new packet");
+				logger.finer("received new packet");
 				ArtNetPacket packet=ArtNetPacketParser.parse(receivedPacket);
 				if (packet!=null) {
+					if (packet.getType()==PacketType.ART_POLL) {
+						sendArtPollReply(receivedPacket.getAddress(),(ArtPollPacket)packet);
+					}
 					for(ArtNetServerListener l : listeners) {
 						l.artNetPacketReceived(packet);
 					}
@@ -86,7 +91,11 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 		}
 	}
 
-	private void setBroadcastAddress(String address) {
+	private void sendArtPollReply(InetAddress inetAddress, ArtPollPacket packet) {
+
+	}
+
+	public void setBroadcastAddress(String address) {
 		try {
 			broadCastAddress=InetAddress.getByName(address);
 			logger.info("broadcast IP set to: "+broadCastAddress);

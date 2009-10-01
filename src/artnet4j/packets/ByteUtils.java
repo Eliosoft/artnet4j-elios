@@ -61,7 +61,7 @@ public class ByteUtils {
 	 * @return
 	 */
 	public final int getInt16(int offset) {
-		return byteToUint(data[offset]) << 8 + byteToUint(data[offset + 1]);
+		return (byteToUint(data[offset])<<8) | byteToUint(data[offset + 1]);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class ByteUtils {
 	 * @return
 	 */
 	public final int getInt16LE(int offset) {
-		return byteToUint(data[offset + 1]) << 8 + byteToUint(data[offset]);
+		return (byteToUint(data[offset + 1]) << 8) | byteToUint(data[offset]);
 	}
 
 	/**
@@ -107,13 +107,16 @@ public class ByteUtils {
 		data[offset] = (byte) (val & 0xff);
 	}
 
-	public final String toHex() {
+	public final String toHex(int length) {
 		String result = "";
-		for (int i = 0; i < data.length; i++) {
+		for (int i = 0; i < length; i++) {
 			if (0 == i % 16) {
-				result += hex(i, 4) + " ";
+				result += hex(i, 4) + ": ";
 			}
 			result += hex(byteToUint(data[i]), 2);
+			if (7==i%8) {
+				result+=" ";
+			}
 			result += (15 == i % 16 ? "\n" : " ");
 		}
 		return result;

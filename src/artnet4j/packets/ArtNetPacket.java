@@ -87,6 +87,6 @@ public abstract class ArtNetPacket {
 
 	@Override
 	public String toString() {
-		return data.toHex();
+		return data.toHex(getLength());
 	}
 }

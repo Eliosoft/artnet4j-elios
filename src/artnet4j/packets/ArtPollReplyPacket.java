@@ -76,6 +76,8 @@ public class ArtPollReplyPacket extends ArtNetPacket {
 	@Override
 	public boolean parse(byte[] raw) {
 		setData(raw);
+		//		System.out.println(toString());
+		System.out.println(raw[172]+" "+raw[173]);
 		setIPAddress(data.getByteChunk(null, 10, 4));
 		subSwitch=data.getInt16(18);
 		oemCode=data.getInt16(20);

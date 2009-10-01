@@ -1,6 +1,5 @@
 package artnet4j.packets;
 
-
 public class ArtDmxPacket extends ArtNetPacket {
 
 	private int numChannels;
@@ -16,6 +15,11 @@ public class ArtDmxPacket extends ArtNetPacket {
 	}
 
 	@Override
+	public int getLength() {
+		return 18 + (1 == numChannels % 2 ? numChannels + 1 : numChannels);
+	}
+
+	@Override
 	public boolean parse(byte[] raw) {
 		return false;
 	}
@@ -24,7 +28,8 @@ public class ArtDmxPacket extends ArtNetPacket {
 		logger.info("setting DMX data for: " + numChannels + " channels");
 		this.numChannels = numChannels;
 		data.setByteChunk(dmxData, 18, numChannels);
-		data.setInt16(numChannels, 16);
+		data.setInt16((1 == numChannels % 2 ? numChannels + 1 : numChannels),
+				16);
 	}
 
 	public void setSequenceID(int id) {
