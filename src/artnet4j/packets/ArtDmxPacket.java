@@ -25,7 +25,7 @@ public class ArtDmxPacket extends ArtNetPacket {
 	}
 
 	public void setDMX(byte[] dmxData, int numChannels) {
-		logger.info("setting DMX data for: " + numChannels + " channels");
+		logger.finer("setting DMX data for: " + numChannels + " channels");
 		this.numChannels = numChannels;
 		data.setByteChunk(dmxData, 18, numChannels);
 		data.setInt16((1 == numChannels % 2 ? numChannels + 1 : numChannels),
@@ -41,7 +41,7 @@ public class ArtDmxPacket extends ArtNetPacket {
 		this.subnetID = subnetID & 0x0f;
 		this.universeID = universeID & 0x0f;
 		data.setInt16LE(subnetID << 4 | universeID, 14);
-		logger.info("universe ID set to: subnet: " + ByteUtils.hex(subnetID, 2)
+		logger.finer("universe ID set to: subnet: " + ByteUtils.hex(subnetID, 2)
 				+ "/" + ByteUtils.hex(universeID, 2));
 	}
 

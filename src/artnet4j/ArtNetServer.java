@@ -33,9 +33,9 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 
 	private int receiveBufferSize;
 
-	private boolean isActive;
+	private boolean isRunning;
 
-	protected final List<ArtNetNode> nodes=new ArrayList<ArtNetNode>();
+	protected final List<ArtNetNode> nodes = new ArrayList<ArtNetNode>();
 
 	public ArtNetServer() {
 		this(DEFAULT_PORT);
@@ -66,22 +66,25 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 
 	@Override
 	public void run() {
-		byte[] receiveBuffer=new byte[receiveBufferSize];
-		DatagramPacket receivedPacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+		byte[] receiveBuffer = new byte[receiveBufferSize];
+		DatagramPacket receivedPacket = new DatagramPacket(receiveBuffer,
+				receiveBuffer.length);
 		try {
-			while(isActive) {
+			while (isRunning) {
 				socket.receive(receivedPacket);
 				logger.finer("received new packet");
-				ArtNetPacket packet=ArtNetPacketParser.parse(receivedPacket);
-				if (packet!=null) {
-					if (packet.getType()==PacketType.ART_POLL) {
-						sendArtPollReply(receivedPacket.getAddress(),(ArtPollPacket)packet);
+				ArtNetPacket packet = ArtNetPacketParser.parse(receivedPacket);
+				if (packet != null) {
+					if (packet.getType() == PacketType.ART_POLL) {
+						sendArtPollReply(receivedPacket.getAddress(),
+								(ArtPollPacket) packet);
 					}
-					for(ArtNetServerListener l : listeners) {
+					for (ArtNetServerListener l : listeners) {
 						l.artNetPacketReceived(packet);
 					}
 				} else {
-					logger.warning("received invalid Art-Net data, packet discarded");
+					logger
+					.warning("received invalid Art-Net data, packet discarded");
 				}
 			}
 			socket.close();
@@ -97,19 +100,21 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 
 	public void setBroadcastAddress(String address) {
 		try {
-			broadCastAddress=InetAddress.getByName(address);
-			logger.info("broadcast IP set to: "+broadCastAddress);
+			broadCastAddress = InetAddress.getByName(address);
+			logger.info("broadcast IP set to: " + broadCastAddress);
 		} catch (UnknownHostException e) {
 			logger.log(Level.WARNING, e.getMessage(), e);
 		}
 	}
 
 	private void setBufferSize(int size) {
-		receiveBufferSize=size;
+		if (!isRunning) {
+			receiveBufferSize = size;
+		}
 	}
 
 	public void start() throws SocketException, ArtNetException {
-		if (broadCastAddress==null) {
+		if (broadCastAddress == null) {
 			setBroadcastAddress(DEFAULT_BROADCAST_IP);
 		}
 		if (socket == null) {
@@ -118,15 +123,51 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 			for (ArtNetServerListener l : listeners) {
 				l.artNetServerStarted(this);
 			}
-			isActive=true;
-			serverThread=new Thread(this);
+			isRunning = true;
+			serverThread = new Thread(this);
 			serverThread.start();
 		} else {
-			throw new ArtNetException("Couldn't create server socket, server already running?");
+			throw new ArtNetException(
+			"Couldn't create server socket, server already running?");
 		}
 	}
 
 	public void stop() {
-		isActive=false;
+		isRunning = false;
+	}
+
+	/**
+	 * Sends the given packet to the specified IP address.
+	 * 
+	 * @param ap
+	 * @param targetAdress
+	 */
+	public void unicastPacket(ArtNetPacket ap, InetAddress targetAdress) {
+		try {
+			DatagramPacket packet = new DatagramPacket(ap.getData(), ap
+					.getLength(), targetAdress, port);
+			socket.send(packet);
+			logger.info("sent packet to: "+targetAdress);
+			for (ArtNetServerListener l : listeners) {
+				l.artNetPacketUnicasted(ap);
+			}
+		} catch (IOException e) {
+			logger.log(Level.WARNING, e.getMessage(), e);
+		}
+	}
+	/**
+	 * Sends the given packet to the specified IP address.
+	 * 
+	 * @param ap
+	 * @param targetIP
+	 */
+	public void unicastPacket(ArtNetPacket ap, String targetIP) {
+		InetAddress targetAdress;
+		try {
+			targetAdress = InetAddress.getByName(targetIP);
+			unicastPacket(ap, targetAdress);
+		} catch (UnknownHostException e) {
+			logger.log(Level.WARNING, e.getMessage(), e);
+		}
 	}
 }

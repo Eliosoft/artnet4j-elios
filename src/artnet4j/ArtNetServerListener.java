@@ -8,7 +8,7 @@ public interface ArtNetServerListener {
 
 	void artNetPacketReceived(ArtNetPacket packet);
 
-	void artNetPacketSent(ArtNetPacket packet);
+	void artNetPacketUnicasted(ArtNetPacket ap);
 
 	void artNetServerStarted(ArtNetServer artNetServer);
 

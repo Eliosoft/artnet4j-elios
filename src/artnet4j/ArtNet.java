@@ -2,86 +2,47 @@ package artnet4j;
 
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import artnet4j.packets.ArtNetPacket;
-import artnet4j.packets.ArtPollPacket;
 import artnet4j.packets.ArtPollReplyPacket;
 import artnet4j.packets.PacketType;
 
 public class ArtNet implements ArtNetServerListener {
 
-	public class NodeDiscovery extends Thread {
-		private final ArtNetDiscoveryListener l;
-		private final boolean isActive=true;
-
-		public NodeDiscovery(ArtNetDiscoveryListener l) {
-			this.l = l;
-		}
-
-		@Override
-		public void run() {
-			try {
-				while(isActive) {
-					ArtPollPacket poll = new ArtPollPacket();
-					server.broadcastPacket(poll);
-					Thread.sleep(ARTPOLL_REPLY_TIMEOUT);
-					if (isActive) {
-						l.discoveryCompleted(new ArrayList<ArtNetNode>(
-								discoveredNodes.values()));
-					}
-				}
-			} catch (InterruptedException e) {
-			}
-		}
-	}
-
 	public static final Logger logger = Logger.getLogger(ArtNet.class
 			.getClass().getName());
 
 	protected static final long ARTPOLL_REPLY_TIMEOUT = 3000;
+	protected static final String VERSION = "0.1";
 
-	protected ConcurrentHashMap<InetAddress, ArtNetNode> discoveredNodes;
-
-	private ArtNetServer server;
-
-	private Thread discoveryThread;
+	protected ArtNetServer server;
+	protected ArtNetNodeDiscovery discovery;
 
 	public ArtNet() {
-		discoveredNodes=new ConcurrentHashMap<InetAddress, ArtNetNode>();
+		logger.info("Art-Net v"+VERSION);
 	}
 
 	@Override
 	public void artNetPacketBroadcasted(ArtNetPacket packet) {
-		logger.info("packet bc'd: " + packet.getType());
 	}
 
 	@Override
 	public void artNetPacketReceived(ArtNetPacket packet) {
-		logger.info("packet received: " + packet.getType());
-		if (packet.getType() == PacketType.ART_POLL_REPLY) {
-			ArtPollReplyPacket reply = (ArtPollReplyPacket) packet;
-			InetAddress nodeIP = reply.getIPAddress();
-			ArtNetNode node = discoveredNodes.get(nodeIP);
-			if (node == null) {
-				logger.info("discovered new node: " + nodeIP);
-				node = reply.getNodeStyle().createNode();
-				discoveredNodes.put(nodeIP, node);
-			}
-			node.extractConfig(reply);
+		logger.fine("packet received: " + packet.getType());
+		if (discovery!=null && packet.getType() == PacketType.ART_POLL_REPLY) {
+			discovery.discoverNode((ArtPollReplyPacket) packet);
 		}
 	}
 
 	@Override
-	public void artNetPacketSent(ArtNetPacket packet) {
-		logger.info("packet sent callback");
+	public void artNetPacketUnicasted(ArtNetPacket ap) {
+
 	}
 
 	@Override
 	public void artNetServerStarted(ArtNetServer artNetServer) {
-		logger.info("server started callback");
+		logger.fine("server started callback");
 	}
 
 	@Override
@@ -89,8 +50,15 @@ public class ArtNet implements ArtNetServerListener {
 		logger.info("server stopped");
 	}
 
-	public void broadCastPacket(ArtNetPacket packet) {
+	public void broadcastPacket(ArtNetPacket packet) {
 		server.broadcastPacket(packet);
+	}
+
+	public ArtNetNodeDiscovery getNodeDiscovery() {
+		if (discovery==null) {
+			discovery = new ArtNetNodeDiscovery(this);
+		}
+		return discovery;
 	}
 
 	public void setBroadCastAddress(String ip) {
@@ -103,12 +71,15 @@ public class ArtNet implements ArtNetServerListener {
 		server.start();
 	}
 
-	public void startNodeDiscovery(ArtNetDiscoveryListener l) throws ArtNetException {
-		if (discoveryThread==null) {
-			discoveryThread = new NodeDiscovery(l);
-			discoveryThread.start();
-		} else {
-			throw new ArtNetException("Node discovery already active");
-		}
+	public void startNodeDiscovery() {
+		getNodeDiscovery().start();
+	}
+
+	public void unicastPacket(ArtNetPacket packet, InetAddress adr) {
+		server.unicastPacket(packet,adr);
+	}
+
+	public void unicastPacket(ArtNetPacket packet, String adr) {
+		server.unicastPacket(packet,adr);
 	}
 }

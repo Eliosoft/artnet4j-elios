@@ -109,15 +109,19 @@ public class ByteUtils {
 
 	public final String toHex(int length) {
 		String result = "";
+		String ascii="";
 		for (int i = 0; i < length; i++) {
 			if (0 == i % 16) {
 				result += hex(i, 4) + ": ";
+				ascii=" ";
 			}
 			result += hex(byteToUint(data[i]), 2);
+			ascii += data[i]>0x1f && data[i]<0x7f ? (char)data[i] : ".";
 			if (7==i%8) {
 				result+=" ";
+				ascii+=" ";
 			}
-			result += (15 == i % 16 ? "\n" : " ");
+			result += (15 == i % 16 ? ascii+"\n" : " ");
 		}
 		return result;
 	}

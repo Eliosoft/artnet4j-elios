@@ -19,7 +19,7 @@ public class ArtNetPacketParser {
 					packet.parse(data);
 					break;
 				} else {
-					logger.info("packet type valid, but not yet supported");
+					logger.info("packet type valid, but not yet supported: "+type);
 				}
 			}
 		}

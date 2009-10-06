@@ -16,12 +16,27 @@ public class PollTest extends TestCase implements ArtNetDiscoveryListener {
 	private int sequenceID;
 
 	@Override
+	public void discoveredNewNode(ArtNetNode node) {
+		if (netLynx==null) {
+			netLynx=node;
+			System.out.println("found net lynx");
+		}
+	}
+
+	@Override
+	public void discoveredNodeDisconnected(ArtNetNode node) {
+		System.out.println("node disconnected: "+node);
+		if (node==netLynx) {
+			netLynx=null;
+		}
+	}
+
+	@Override
 	public void discoveryCompleted(List<ArtNetNode> nodes) {
 		System.out.println(nodes.size()+" nodes found:");
 		for(ArtNetNode n : nodes) {
 			System.out.println(n);
 		}
-		netLynx=nodes.get(0);
 	}
 
 	@Override
@@ -33,19 +48,21 @@ public class PollTest extends TestCase implements ArtNetDiscoveryListener {
 		ArtNet artnet=new ArtNet();
 		try {
 			artnet.start();
-			//artnet.setBroadCastAddress("239.0.0.1");
-			artnet.startNodeDiscovery(this);
+			artnet.getNodeDiscovery().addListener(this);
+			artnet.startNodeDiscovery();
 			while(true) {
 				if (netLynx!=null) {
 					ArtDmxPacket dmx=new ArtDmxPacket();
-					dmx.setUniverse(0, 0x0b);
+					dmx.setUniverse(netLynx.getSubNet(), netLynx.getDmxOuts()[0]);
 					dmx.setSequenceID(sequenceID%255);
-					byte[] buffer=new byte[24];
+					byte[] buffer=new byte[510];
 					for(int i=0; i<buffer.length; i++) {
-						buffer[i]=(byte)(Math.sin(sequenceID*0.05+i*0.2)*127+128);
+						buffer[i]=(byte)(Math.sin(sequenceID*0.05+i*0.8)*127+128);
 					}
 					dmx.setDMX(buffer,buffer.length);
-					artnet.broadCastPacket(dmx);
+					artnet.unicastPacket(dmx,netLynx.getIPAddress());
+					dmx.setUniverse(netLynx.getSubNet(), netLynx.getDmxOuts()[1]);
+					artnet.unicastPacket(dmx,netLynx.getIPAddress());
 					sequenceID++;
 				}
 				Thread.sleep(30);
@@ -55,7 +72,6 @@ public class PollTest extends TestCase implements ArtNetDiscoveryListener {
 		} catch (ArtNetException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

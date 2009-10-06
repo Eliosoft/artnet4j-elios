@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.logging.Logger;
 
 import artnet4j.packets.ArtPollReplyPacket;
+import artnet4j.packets.ByteUtils;
 import artnet4j.packets.PortDescriptor;
 
 public class ArtNetNode {
@@ -20,12 +21,15 @@ public class ArtNetNode {
 	private int oemCode;
 
 	private int nodeStatus;
+	private NodeReportCode reportCode;
 
 	private String shortName;
 	private String longName;
 
 	private int numPorts;
 	private PortDescriptor[] ports;
+	private byte[] dmxIns;
+	private byte[] dmxOuts;
 
 	public ArtNetNode() {
 		this(NodeStyle.ST_NODE);
@@ -44,7 +48,38 @@ public class ArtNetNode {
 		longName=source.getLongName();
 		ports=source.getPorts();
 		numPorts=ports.length;
+		reportCode=source.getReportCode();
+		dmxIns=source.getDmxIns();
+		dmxOuts=source.getDmxOuts();
 		logger.info("updated node config");
+	}
+
+	/**
+	 * @return the dmxIns
+	 */
+	public byte[] getDmxIns() {
+		return dmxIns;
+	}
+
+	/**
+	 * @return the dmxOuts
+	 */
+	public byte[] getDmxOuts() {
+		return dmxOuts;
+	}
+
+	/**
+	 * @return the ip
+	 */
+	public InetAddress getIPAddress() {
+		return ip;
+	}
+
+	/**
+	 * @return the nodeStatus
+	 */
+	public int getNodeStatus() {
+		return nodeStatus;
 	}
 
 	/**
@@ -54,12 +89,37 @@ public class ArtNetNode {
 		return nodeStyle;
 	}
 
+	/**
+	 * @return the oemCode
+	 */
+	public int getOemCode() {
+		return oemCode;
+	}
+
+	/**
+	 * @return the reportCode
+	 */
+	public NodeReportCode getReportCode() {
+		return reportCode;
+	}
+
+	/**
+	 * @return the shortName
+	 */
+	public String getShortName() {
+		return shortName;
+	}
+
+	public int getSubNet() {
+		return subSwitch;
+	}
+
 	public void setIPAddress(InetAddress ip) {
 		this.ip=ip;
 	}
 
 	@Override
 	public String toString() {
-		return "node: "+ip+" "+longName+", "+numPorts+" ports, "+subSwitch+" subswitch";
+		return "node: "+nodeStyle+" "+ip+" "+longName+", "+numPorts+" ports, "+ByteUtils.hex(subSwitch,2)+" subswitch";
 	}
 }
