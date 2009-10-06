@@ -45,13 +45,15 @@ public class ArtNetNodeDiscovery extends Thread {
 		if (node == null) {
 			logger.info("discovered new node: " + nodeIP);
 			node = reply.getNodeStyle().createNode();
+			node.extractConfig(reply);
 			discoveredNodes.put(nodeIP, node);
 			for(ArtNetDiscoveryListener l : listeners) {
 				l.discoveredNewNode(node);
 			}
+		} else {
+			node.extractConfig(reply);
 		}
 		lastDiscovered.add(node);
-		node.extractConfig(reply);
 	}
 
 	public void removeListener(ArtNetDiscoveryListener l) {
