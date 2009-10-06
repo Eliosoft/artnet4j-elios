@@ -48,7 +48,9 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 	}
 
 	public void addListener(ArtNetServerListener l) {
-		listeners.add(l);
+		synchronized (listeners) {
+			listeners.add(l);
+		}
 	}
 
 	public void broadcastPacket(ArtNetPacket ap) {
@@ -61,6 +63,12 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 			}
 		} catch (IOException e) {
 			logger.log(Level.WARNING, e.getMessage(), e);
+		}
+	}
+
+	public void removeListener(ArtNetServerListener l) {
+		synchronized (listeners) {
+			listeners.remove(l);
 		}
 	}
 
@@ -82,9 +90,6 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 					for (ArtNetServerListener l : listeners) {
 						l.artNetPacketReceived(packet);
 					}
-				} else {
-					logger
-					.warning("received invalid Art-Net data, packet discarded");
 				}
 			}
 			socket.close();
@@ -101,7 +106,7 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 	public void setBroadcastAddress(String address) {
 		try {
 			broadCastAddress = InetAddress.getByName(address);
-			logger.info("broadcast IP set to: " + broadCastAddress);
+			logger.fine("broadcast IP set to: " + broadCastAddress);
 		} catch (UnknownHostException e) {
 			logger.log(Level.WARNING, e.getMessage(), e);
 		}
@@ -147,26 +152,11 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 			DatagramPacket packet = new DatagramPacket(ap.getData(), ap
 					.getLength(), targetAdress, port);
 			socket.send(packet);
-			logger.info("sent packet to: "+targetAdress);
+			logger.finer("sent packet to: "+targetAdress);
 			for (ArtNetServerListener l : listeners) {
 				l.artNetPacketUnicasted(ap);
 			}
 		} catch (IOException e) {
-			logger.log(Level.WARNING, e.getMessage(), e);
-		}
-	}
-	/**
-	 * Sends the given packet to the specified IP address.
-	 * 
-	 * @param ap
-	 * @param targetIP
-	 */
-	public void unicastPacket(ArtNetPacket ap, String targetIP) {
-		InetAddress targetAdress;
-		try {
-			targetAdress = InetAddress.getByName(targetIP);
-			unicastPacket(ap, targetAdress);
-		} catch (UnknownHostException e) {
 			logger.log(Level.WARNING, e.getMessage(), e);
 		}
 	}

@@ -2,6 +2,8 @@ package artnet4j;
 
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import artnet4j.packets.ArtNetPacket;
@@ -14,13 +16,17 @@ public class ArtNet implements ArtNetServerListener {
 			.getClass().getName());
 
 	protected static final long ARTPOLL_REPLY_TIMEOUT = 3000;
-	protected static final String VERSION = "0.1";
+	protected static final String VERSION = "0001";
 
 	protected ArtNetServer server;
 	protected ArtNetNodeDiscovery discovery;
 
 	public ArtNet() {
-		logger.info("Art-Net v"+VERSION);
+		logger.info("Art-Net v" + VERSION);
+	}
+
+	public void addServerListener(ArtNetServerListener l) {
+		server.addListener(l);
 	}
 
 	@Override
@@ -30,7 +36,7 @@ public class ArtNet implements ArtNetServerListener {
 	@Override
 	public void artNetPacketReceived(ArtNetPacket packet) {
 		logger.fine("packet received: " + packet.getType());
-		if (discovery!=null && packet.getType() == PacketType.ART_POLL_REPLY) {
+		if (discovery != null && packet.getType() == PacketType.ART_POLL_REPLY) {
 			discovery.discoverNode((ArtPollReplyPacket) packet);
 		}
 	}
@@ -55,10 +61,19 @@ public class ArtNet implements ArtNetServerListener {
 	}
 
 	public ArtNetNodeDiscovery getNodeDiscovery() {
-		if (discovery==null) {
+		if (discovery == null) {
 			discovery = new ArtNetNodeDiscovery(this);
 		}
 		return discovery;
+	}
+
+	public void init() {
+		server = new ArtNetServer();
+		server.addListener(this);
+	}
+
+	public void removeServerListener(ArtNetServerListener l) {
+		server.removeListener(l);
 	}
 
 	public void setBroadCastAddress(String ip) {
@@ -66,8 +81,9 @@ public class ArtNet implements ArtNetServerListener {
 	}
 
 	public void start() throws SocketException, ArtNetException {
-		server = new ArtNetServer();
-		server.addListener(this);
+		if (server==null) {
+			init();
+		}
 		server.start();
 	}
 
@@ -76,10 +92,22 @@ public class ArtNet implements ArtNetServerListener {
 	}
 
 	public void unicastPacket(ArtNetPacket packet, InetAddress adr) {
-		server.unicastPacket(packet,adr);
+		server.unicastPacket(packet, adr);
 	}
 
+	/**
+	 * Sends the given packet to the specified IP address.
+	 * 
+	 * @param packet
+	 * @param adr
+	 */
 	public void unicastPacket(ArtNetPacket packet, String adr) {
-		server.unicastPacket(packet,adr);
+		InetAddress targetAdress;
+		try {
+			targetAdress = InetAddress.getByName(adr);
+			server.unicastPacket(packet, targetAdress);
+		} catch (UnknownHostException e) {
+			logger.log(Level.WARNING, e.getMessage(), e);
+		}
 	}
 }

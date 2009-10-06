@@ -19,7 +19,7 @@
 	<property name="release.jar" value="${release.dir}/${lib.jar.filename}" />
 	<property name="release.src.zip" value="${release.dir}/${project.name}-${lib.version}-src.zip" />
 	<property name="release.bin.zip" value="${release.dir}/${project.name}-${lib.version}.zip" />
-	<property name="release.examples.dir" value="examples/${srcfolder.id}" />
+	<property name="release.examples.dir" value="examples" />
 	<property name="readme.dir" value="readme" />
 	<property name="doap.lib" value="${lib.libs.path}/doapamine.jar" />
 	<property name="doap.src.dir" value="src.doap" />
@@ -43,7 +43,7 @@
 		<mkdir dir="${build.classes.dir}" />
 		<javac destdir="${build.classes.dir}" source="${lib.jdk.level}" target="${lib.jdk.level}">
 			<src path="${src.dir}"/>
-			<src path="${doap.src.dir}"/>
+			<!-- <src path="${doap.src.dir}"/> -->
 			<compilerarg value="-Xlint:unchecked" />
 			<classpath>
 				<pathelement location="${lib.libs.path}" />
@@ -69,20 +69,24 @@
 		<zip destfile="${release.bin.zip}" comment="${lib.zip.comment} - Binary release">
 			<zipfileset dir="${release.dir}" includes="${project.name}.jar" prefix="${project.name}/library" />
 			<zipfileset dir="${release.javadoc.dir}" prefix="${project.name}/docs" />
+			<!--
 			<zipfileset dir="${release.examples.dir}" prefix="${project.name}/examples" />
 			<zipfileset dir=".." includes="LICENSE.txt" prefix="${project.name}" />
 			<zipfileset dir="${readme.dir}" includes="README.txt" prefix="${project.name}" />
 			<zipfileset dir="${readme.dir}" includes="CHANGELOG.txt" prefix="${project.name}" />
 			<zipfileset dir="${release.dir}" includes="${doap.file}" prefix="${project.name}" />
+			-->
 		</zip>
 		<zip destfile="${release.src.zip}" comment="${lib.zip.comment} - Source code release">
 			<zipfileset dir="${src.dir}" prefix="${project.name}/src" />
-			<zipfileset dir="${release.examples.dir}" prefix="${project.name}/examples" />
 			<zipfileset dir="${release.javadoc.dir}" prefix="${project.name}/docs" />
+			<!--
+			<zipfileset dir="${release.examples.dir}" prefix="${project.name}/examples" />
 			<zipfileset dir=".." includes="LICENSE.txt" prefix="${project.name}" />
 			<zipfileset dir="${readme.dir}" includes="README.txt" prefix="${project.name}" />
 			<zipfileset dir="${readme.dir}" includes="CHANGELOG.txt" prefix="${project.name}" />
 			<zipfileset dir="${release.dir}" includes="${doap.file}" prefix="${project.name}" />
+			-->
 		</zip>
 	</target>
 

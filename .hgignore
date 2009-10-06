@@ -2,4 +2,6 @@ syntax: glob
 
 .DS_Store
 bin
+docs
+dist
 

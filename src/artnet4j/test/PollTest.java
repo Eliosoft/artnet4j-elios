@@ -3,16 +3,19 @@ package artnet4j.test;
 import java.net.SocketException;
 import java.util.List;
 
-import junit.framework.TestCase;
 import artnet4j.ArtNet;
 import artnet4j.ArtNetDiscoveryListener;
 import artnet4j.ArtNetException;
 import artnet4j.ArtNetNode;
 import artnet4j.packets.ArtDmxPacket;
 
-public class PollTest extends TestCase implements ArtNetDiscoveryListener {
+public class PollTest implements ArtNetDiscoveryListener {
 
+	public static void main(String[] args) {
+		new PollTest().test();
+	}
 	private ArtNetNode netLynx;
+
 	private int sequenceID;
 
 	@Override
@@ -44,7 +47,7 @@ public class PollTest extends TestCase implements ArtNetDiscoveryListener {
 		System.out.println("discovery failed");
 	}
 
-	public void testDiscovery() {
+	private void test() {
 		ArtNet artnet=new ArtNet();
 		try {
 			artnet.start();
