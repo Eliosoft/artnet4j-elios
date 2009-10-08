@@ -22,6 +22,7 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 	public static final String DEFAULT_BROADCAST_IP = "2.255.255.255";
 
 	protected final int port;
+	private final int sendPort;
 
 	protected DatagramSocket socket;
 
@@ -35,15 +36,14 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 
 	private boolean isRunning;
 
-	protected final List<ArtNetNode> nodes = new ArrayList<ArtNetNode>();
-
 	public ArtNetServer() {
-		this(DEFAULT_PORT);
+		this(DEFAULT_PORT,DEFAULT_PORT);
 	}
 
-	public ArtNetServer(int port) {
+	public ArtNetServer(int port, int sendPort) {
 		super(NodeStyle.ST_SERVER);
 		this.port = port;
+		this.sendPort=sendPort;
 		setBufferSize(2048);
 	}
 
@@ -56,7 +56,7 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 	public void broadcastPacket(ArtNetPacket ap) {
 		try {
 			DatagramPacket packet = new DatagramPacket(ap.getData(), ap
-					.getLength(), broadCastAddress, port);
+					.getLength(), broadCastAddress, sendPort);
 			socket.send(packet);
 			for (ArtNetServerListener l : listeners) {
 				l.artNetPacketBroadcasted(ap);
@@ -150,7 +150,7 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 	public void unicastPacket(ArtNetPacket ap, InetAddress targetAdress) {
 		try {
 			DatagramPacket packet = new DatagramPacket(ap.getData(), ap
-					.getLength(), targetAdress, port);
+					.getLength(), targetAdress, sendPort);
 			socket.send(packet);
 			logger.finer("sent packet to: "+targetAdress);
 			for (ArtNetServerListener l : listeners) {

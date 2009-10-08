@@ -12,6 +12,8 @@ public class ArtDmxPacket extends ArtNetPacket {
 		setData(new byte[530]);
 		setHeader();
 		setProtocol();
+		// physical input
+		data.setInt8(0x02,13);
 	}
 
 	@Override
@@ -44,5 +46,4 @@ public class ArtDmxPacket extends ArtNetPacket {
 		logger.finer("universe ID set to: subnet: " + ByteUtils.hex(subnetID, 2)
 				+ "/" + ByteUtils.hex(universeID, 2));
 	}
-
 }

@@ -120,6 +120,6 @@ public class ArtNetNode {
 
 	@Override
 	public String toString() {
-		return "node: "+nodeStyle+" "+ip+" "+longName+", "+numPorts+" ports, "+ByteUtils.hex(subSwitch,2)+" subswitch";
+		return "node: "+nodeStyle+" "+ip+" "+longName+", "+numPorts+" ports, subswitch: "+ByteUtils.hex(subSwitch,2);
 	}
 }

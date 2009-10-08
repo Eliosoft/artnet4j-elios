@@ -91,6 +91,22 @@ public class ArtNet implements ArtNetServerListener {
 		getNodeDiscovery().start();
 	}
 
+	/**
+	 * Sends the given packet to the specified Art-Net node.
+	 * 
+	 * @param packet
+	 * @param node
+	 */
+	public void unicastPacket(ArtNetPacket packet, ArtNetNode node) {
+		server.unicastPacket(packet, node.getIPAddress());
+	}
+
+	/**
+	 * Sends the given packet to the specified IP address.
+	 * 
+	 * @param packet
+	 * @param adr
+	 */
 	public void unicastPacket(ArtNetPacket packet, InetAddress adr) {
 		server.unicastPacket(packet, adr);
 	}
