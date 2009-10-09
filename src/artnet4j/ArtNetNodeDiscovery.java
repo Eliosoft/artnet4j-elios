@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import artnet4j.packets.ArtPollPacket;
 import artnet4j.packets.ArtPollReplyPacket;
 
-public class ArtNetNodeDiscovery extends Thread {
+public class ArtNetNodeDiscovery implements Runnable {
 
 	public static final int POLL_INTERVAL = 10000;
 
@@ -27,6 +27,8 @@ public class ArtNetNodeDiscovery extends Thread {
 	protected boolean isActive = true;
 
 	protected long discoveryInterval;
+
+	private Thread discoveryThread;
 
 	public ArtNetNodeDiscovery(ArtNet artNet) {
 		this.artNet = artNet;
@@ -47,7 +49,7 @@ public class ArtNetNodeDiscovery extends Thread {
 			node = reply.getNodeStyle().createNode();
 			node.extractConfig(reply);
 			discoveredNodes.put(nodeIP, node);
-			for(ArtNetDiscoveryListener l : listeners) {
+			for (ArtNetDiscoveryListener l : listeners) {
 				l.discoveredNewNode(node);
 			}
 		} else {
@@ -72,7 +74,7 @@ public class ArtNetNodeDiscovery extends Thread {
 				Thread.sleep(ArtNet.ARTPOLL_REPLY_TIMEOUT);
 				if (isActive) {
 					synchronized (listeners) {
-						for(ArtNetNode node : discoveredNodes.values()) {
+						for (ArtNetNode node : discoveredNodes.values()) {
 							if (!lastDiscovered.contains(node)) {
 								discoveredNodes.remove(node.getIPAddress());
 								for (ArtNetDiscoveryListener l : listeners) {
@@ -96,5 +98,18 @@ public class ArtNetNodeDiscovery extends Thread {
 
 	public void setInterval(int interval) {
 		discoveryInterval = Math.max(interval, ArtNet.ARTPOLL_REPLY_TIMEOUT);
+	}
+
+	public void start() throws ArtNetException {
+		if (discoveryThread == null) {
+			discoveryThread = new Thread(this);
+			discoveryThread.start();
+		} else {
+			throw new ArtNetException("discovery already started.");
+		}
+	}
+
+	public void stop() {
+		isActive = false;
 	}
 }

@@ -87,8 +87,17 @@ public class ArtNet implements ArtNetServerListener {
 		server.start();
 	}
 
-	public void startNodeDiscovery() {
+	public void startNodeDiscovery() throws ArtNetException {
 		getNodeDiscovery().start();
+	}
+
+	public void stop() {
+		if (discovery!=null) {
+			discovery.stop();
+		}
+		if (server!=null) {
+			server.stop();
+		}
 	}
 
 	/**

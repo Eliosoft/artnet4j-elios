@@ -94,6 +94,9 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 			}
 			socket.close();
 			logger.info("server thread terminated.");
+			for(ArtNetServerListener l : listeners) {
+				l.artNetServerStopped(this);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
