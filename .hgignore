@@ -1,6 +1,7 @@
 syntax: glob
 
 .DS_Store
+*.orig
 bin
 docs
 dist
