@@ -62,7 +62,7 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 				l.artNetPacketBroadcasted(ap);
 			}
 		} catch (IOException e) {
-			logger.log(Level.WARNING, e.getMessage(), e);
+			logger.warning(e.getMessage());
 		}
 	}
 
@@ -160,7 +160,7 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 				l.artNetPacketUnicasted(ap);
 			}
 		} catch (IOException e) {
-			logger.log(Level.WARNING, e.getMessage(), e);
+			logger.warning(e.getMessage());
 		}
 	}
 }

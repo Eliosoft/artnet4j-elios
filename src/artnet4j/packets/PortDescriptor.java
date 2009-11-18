@@ -2,9 +2,9 @@ package artnet4j.packets;
 
 public class PortDescriptor {
 
-	boolean canOutput;
-	boolean canInput;
-	PortType type;
+	protected boolean canOutput;
+	protected boolean canInput;
+	protected PortType type;
 
 	public PortDescriptor(int id) {
 		canOutput = (id & 0x80) > 0;
@@ -15,6 +15,27 @@ public class PortDescriptor {
 				type = t;
 			}
 		}
+	}
+
+	/**
+	 * @return the canInput
+	 */
+	public boolean canInput() {
+		return canInput;
+	}
+
+	/**
+	 * @return the canOutput
+	 */
+	public boolean canOutput() {
+		return canOutput;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public PortType getType() {
+		return type;
 	}
 
 	@Override

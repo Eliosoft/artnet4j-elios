@@ -36,21 +36,21 @@ public class ArtNetNode {
 	}
 
 	public ArtNetNode(NodeStyle style) {
-		nodeStyle=style;
+		nodeStyle = style;
 	}
 
 	public void extractConfig(ArtPollReplyPacket source) {
 		setIPAddress(source.getIPAddress());
-		subSwitch=source.getSubSwitch();
-		oemCode=source.getOEMCode();
-		nodeStatus=source.getNodeStatus();
-		shortName=source.getShortName();
-		longName=source.getLongName();
-		ports=source.getPorts();
-		numPorts=ports.length;
-		reportCode=source.getReportCode();
-		dmxIns=source.getDmxIns();
-		dmxOuts=source.getDmxOuts();
+		subSwitch = source.getSubSwitch();
+		oemCode = source.getOEMCode();
+		nodeStatus = source.getNodeStatus();
+		shortName = source.getShortName();
+		longName = source.getLongName();
+		ports = source.getPorts();
+		numPorts = ports.length;
+		reportCode = source.getReportCode();
+		dmxIns = source.getDmxIns();
+		dmxOuts = source.getDmxOuts();
 		logger.info("updated node config");
 	}
 
@@ -76,6 +76,13 @@ public class ArtNetNode {
 	}
 
 	/**
+	 * @return the longName
+	 */
+	public String getLongName() {
+		return longName;
+	}
+
+	/**
 	 * @return the nodeStatus
 	 */
 	public int getNodeStatus() {
@@ -90,10 +97,24 @@ public class ArtNetNode {
 	}
 
 	/**
+	 * @return the numPorts
+	 */
+	public int getNumPorts() {
+		return numPorts;
+	}
+
+	/**
 	 * @return the oemCode
 	 */
 	public int getOemCode() {
 		return oemCode;
+	}
+
+	/**
+	 * @return the ports
+	 */
+	public PortDescriptor[] getPorts() {
+		return ports;
 	}
 
 	/**
@@ -114,12 +135,18 @@ public class ArtNetNode {
 		return subSwitch;
 	}
 
+	public String getSubNetAsHex() {
+		return ByteUtils.hex(subSwitch, 2);
+	}
+
 	public void setIPAddress(InetAddress ip) {
-		this.ip=ip;
+		this.ip = ip;
 	}
 
 	@Override
 	public String toString() {
-		return "node: "+nodeStyle+" "+ip+" "+longName+", "+numPorts+" ports, subswitch: "+ByteUtils.hex(subSwitch,2);
+		return "node: " + nodeStyle + " " + ip + " " + longName + ", "
+		+ numPorts + " ports, subswitch: "
+		+ ByteUtils.hex(subSwitch, 2);
 	}
 }
