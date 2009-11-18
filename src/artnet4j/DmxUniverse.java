@@ -11,8 +11,6 @@ public class DmxUniverse {
 	protected boolean isEnabled = true;
 	protected boolean isActive = true;
 
-	protected ArtNetServer server;
-
 	public DmxUniverse(ArtNetNode node, ArtNetNodeConfig config) {
 		this.node = node;
 		this.config = config;
@@ -35,7 +33,7 @@ public class DmxUniverse {
 		ArtDmxPacket packet = new ArtDmxPacket();
 		packet.setSequenceID(sequenceID);
 		packet.setUniverse(node.getSubNet(), config.universeID);
-		packet.setDMX(frameData, 0x200);
+		packet.setDMX(frameData, config.numDmxChannels);
 		return packet;
 	}
 
@@ -53,17 +51,16 @@ public class DmxUniverse {
 		return isEnabled;
 	}
 
-	public void sendFrame(int sequenceID) {
-		ArtDmxPacket packet = getPacket(sequenceID);
-		server.unicastPacket(packet, node.getIPAddress());
-	}
-
 	/**
 	 * @param isActive
 	 *            the isActive to sunsetTime
 	 */
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	public void setChannel(int offset, int val) {
+		frameData[offset] = (byte) val;
 	}
 
 	/**
@@ -82,7 +79,8 @@ public class DmxUniverse {
 		this.node = node;
 	}
 
-	public void setPixel(int offset, int col) {
+	public void setRGBPixel(int offset, int col) {
+		offset*=3;
 		frameData[offset] = (byte) (col >> 16 & 0xff);
 		frameData[offset + 1] = (byte) (col >> 8 & 0xff);
 		frameData[offset + 2] = (byte) (col & 0xff);
