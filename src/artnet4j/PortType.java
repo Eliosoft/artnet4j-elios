@@ -16,18 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with artnet4j. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package artnet4j;
 
-public class ArtNetException extends Exception {
+public enum PortType {
+    DMX512(0), MIDI(1), AVAB(2), COLORTRAN(3), ADB62_5(4), ARTNET(5);
 
-	private static final long serialVersionUID = 1L;
+    private int id;
 
-	public ArtNetException(String message) {
-		super(message);
-	}
+    private PortType(int id) {
+        this.id = id;
+    }
 
-	public ArtNetException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public int getPortID() {
+        return id;
+    }
 }

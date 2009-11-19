@@ -17,17 +17,31 @@
  * along with artnet4j. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package artnet4j;
+package artnet4j.events;
 
-public class ArtNetException extends Exception {
+import java.util.List;
 
-	private static final long serialVersionUID = 1L;
+import artnet4j.ArtNetNode;
 
-	public ArtNetException(String message) {
-		super(message);
-	}
+public class ArtNetDiscoveryEventAdapter implements ArtNetDiscoveryListener {
 
-	public ArtNetException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    @Override
+    public void discoveredNewNode(ArtNetNode node) {
+
+    }
+
+    @Override
+    public void discoveredNodeDisconnected(ArtNetNode node) {
+
+    }
+
+    @Override
+    public void discoveryCompleted(List<ArtNetNode> nodes) {
+
+    }
+
+    @Override
+    public void discoveryFailed(Throwable t) {
+
+    }
 }
