@@ -36,6 +36,10 @@ public class DmxUniverse {
         frameData = new byte[0x200];
     }
 
+    public DmxUniverseConfig getConfig() {
+        return config;
+    }
+
     public String getID() {
         return config.id;
     }
