@@ -115,6 +115,10 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 			for (ArtNetServerListener l : listeners) {
 				l.artNetServerStopped(this);
 			}
+		} catch (SocketException e) {
+			if (!e.getMessage().equals("Socket closed")) {
+				e.printStackTrace();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -160,6 +164,9 @@ public class ArtNetServer extends ArtNetNode implements Runnable {
 
 	public void stop() {
 		isRunning = false;
+		if (this.socket != null) {
+			this.socket.close();
+		}
 	}
 
 	/**
