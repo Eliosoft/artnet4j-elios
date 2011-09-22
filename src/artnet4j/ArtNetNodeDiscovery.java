@@ -119,7 +119,8 @@ public class ArtNetNodeDiscovery implements Runnable {
 
 	public void start() throws ArtNetException {
 		if (discoveryThread == null) {
-			discoveryThread = new Thread(this);
+			discoveryThread = new Thread(this, getClass().getName());
+			discoveryThread.setDaemon(true);
 			discoveryThread.start();
 		} else {
 			throw new ArtNetException("discovery already started.");
