@@ -94,11 +94,11 @@ public class PollTest implements ArtNetDiscoveryListener {
                 Thread.sleep(30);
             }
         } catch (SocketException e) {
-            e.printStackTrace();
+        	throw new AssertionError(e);
         } catch (ArtNetException e) {
-            e.printStackTrace();
+        	throw new AssertionError(e);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+        	throw new AssertionError(e);
         }
     }
 }

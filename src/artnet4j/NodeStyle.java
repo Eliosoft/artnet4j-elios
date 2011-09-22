@@ -37,9 +37,9 @@ public enum NodeStyle {
         try {
             node = nodeClass.newInstance();
         } catch (InstantiationException e) {
-            e.printStackTrace();
+        	throw new AssertionError(e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        	throw new AssertionError(e);
         }
         return node;
     }
