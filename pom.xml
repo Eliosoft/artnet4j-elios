@@ -4,7 +4,7 @@
 	<groupId>net.eliosoft</groupId>
 	<artifactId>artnet4j</artifactId>
 	<name>ArtNet4j</name>
-	<version>001</version>
+	<version>0001</version>
 	<description>Java implementation of the Art-Net protocol</description>
 	<packaging>jar</packaging>
 	<inceptionYear>2009</inceptionYear>
@@ -63,6 +63,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-site-plugin</artifactId>
+                        <version>3.1</version>
                         <dependencies>
                             <dependency>
                                 <groupId>org.apache.maven.doxia</groupId>
@@ -70,19 +71,6 @@
                                 <version>1.3</version>
                             </dependency>
                         </dependencies>
-                        <executions>
-                            <execution>
-                                <id>userguide</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>site</goal>
-                                </goals>
-                                <configuration>
-                                    <inputEncoding>UTF-8</inputEncoding>
-                                    <outputEncoding>UTF-8</outputEncoding>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
