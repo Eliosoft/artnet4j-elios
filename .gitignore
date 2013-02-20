@@ -1,0 +1,8 @@
+classes/
+dist/
+.DS_Store
+.classpath
+.project
+bin/
+target/
+docs/
